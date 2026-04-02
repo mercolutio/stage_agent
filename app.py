@@ -41,7 +41,7 @@ def detect_media_type(image_bytes: bytes) -> str:
 
 
 def analyze_room_with_claude(image_bytes: bytes, user_instructions: str) -> str:
-    """Use Claude Vision to analyze the room and generate an optimized img2img prompt."""
+    """Use Claude Vision to analyze the room and generate positive + negative img2img prompts."""
     image_b64 = base64.standard_b64encode(image_bytes).decode("utf-8")
     media_type = detect_media_type(image_bytes)
 
@@ -64,14 +64,12 @@ def analyze_room_with_claude(image_bytes: bytes, user_instructions: str) -> str:
                         "type": "text",
                         "text": (
                             f"You are an expert interior designer and Stable Diffusion prompt engineer. "
-                            f"Look at this room image and create a concise img2img prompt in English that will "
-                            f"make these specific changes visible and dramatic: '{user_instructions}'.\n\n"
-                            f"Rules:\n"
-                            f"1. START with the desired changes as the most prominent part of the prompt\n"
-                            f"2. Describe what the room SHOULD look like AFTER the changes (not what it looks like now)\n"
-                            f"3. Be specific and concrete about the changes (colors, materials, objects)\n"
-                            f"4. End with: photorealistic, 8k, interior design photography, professional architectural photography, sharp focus\n"
-                            f"5. Output ONLY the final prompt, nothing else, no explanations"
+                            f"Look at this room image and create prompts for these changes: '{user_instructions}'.\n\n"
+                            f"Respond with EXACTLY two lines, nothing else:\n"
+                            f"POSITIVE: [describe the room AFTER the changes, starting with the most prominent changes, "
+                            f"end with: photorealistic, 8k, interior design photography, sharp focus]\n"
+                            f"NEGATIVE: [list every object or element that should be REMOVED or ABSENT from the image, "
+                            f"plus standard quality negatives: blurry, low quality, distorted, watermark]"
                         ),
                     },
                 ],
@@ -79,10 +77,19 @@ def analyze_room_with_claude(image_bytes: bytes, user_instructions: str) -> str:
         ],
     )
 
-    return response.content[0].text.strip()
+    raw = response.content[0].text.strip()
+    positive, negative = "", "blurry, low quality, distorted"
+    for line in raw.splitlines():
+        if line.upper().startswith("POSITIVE:"):
+            positive = line.split(":", 1)[1].strip()
+        elif line.upper().startswith("NEGATIVE:"):
+            negative = line.split(":", 1)[1].strip()
+    if not positive:
+        positive = raw  # fallback: use whole response as positive
+    return positive, negative
 
 
-def transform_image_with_stability(image_bytes: bytes, prompt: str, strength: float) -> bytes:
+def transform_image_with_stability(image_bytes: bytes, prompt: str, strength: float, negative_prompt: str = "") -> bytes:
     """Send image + prompt to Stability AI img2img endpoint."""
     if not STABILITY_API_KEY:
         raise ValueError("STABILITY_API_KEY ist nicht gesetzt")
@@ -101,7 +108,7 @@ def transform_image_with_stability(image_bytes: bytes, prompt: str, strength: fl
             "image_strength": str(strength),
             "text_prompts[0][text]": prompt,
             "text_prompts[0][weight]": "1",
-            "text_prompts[1][text]": "blurry, low quality, distorted, ugly, bad anatomy",
+            "text_prompts[1][text]": negative_prompt or "blurry, low quality, distorted, ugly, bad anatomy",
             "text_prompts[1][weight]": "-1",
             "cfg_scale": "12",
             "samples": "1",
@@ -130,15 +137,15 @@ def generate_animation_frames(
     prompt: str,
     target_strength: float,
     num_frames: int,
+    negative_prompt: str = "",
 ) -> list[bytes]:
     """Generate intermediate frames at progressive strength levels."""
     frames = []
     for i in range(num_frames):
         t = (i + 1) / num_frames
         eased_t = ease_in_out_cubic(t)
-        # Minimum strength ~0.08 to avoid too-similar-to-original frames
         strength = max(0.08, eased_t * target_strength)
-        frame_bytes = transform_image_with_stability(image_bytes, prompt, strength)
+        frame_bytes = transform_image_with_stability(image_bytes, prompt, strength, negative_prompt)
         frames.append(frame_bytes)
     return frames
 
@@ -264,12 +271,12 @@ def edit_room():
     image_bytes = file.read()
 
     try:
-        optimized_prompt = analyze_room_with_claude(image_bytes, instructions)
+        optimized_prompt, negative_prompt = analyze_room_with_claude(image_bytes, instructions)
     except Exception as e:
         return jsonify({"error": f"Claude-Analyse fehlgeschlagen: {str(e)}"}), 500
 
     try:
-        result_bytes = transform_image_with_stability(image_bytes, optimized_prompt, strength)
+        result_bytes = transform_image_with_stability(image_bytes, optimized_prompt, strength, negative_prompt)
     except ValueError as e:
         return jsonify({"error": str(e)}), 500
     except RuntimeError as e:
@@ -282,6 +289,7 @@ def edit_room():
         "result_image": f"data:image/png;base64,{result_b64}",
         "original_image": f"data:image/{file.content_type.split('/')[1]};base64,{original_b64}",
         "generated_prompt": optimized_prompt,
+        "negative_prompt": negative_prompt,
     })
 
 
@@ -317,21 +325,21 @@ def animate_room():
         end_bytes = end_file.read()
 
     try:
-        optimized_prompt = analyze_room_with_claude(start_bytes, instructions)
+        optimized_prompt, negative_prompt = analyze_room_with_claude(start_bytes, instructions)
     except Exception as e:
         return jsonify({"error": f"Claude-Analyse fehlgeschlagen: {str(e)}"}), 500
 
     try:
         if mode == "blend":
-            # Blend mode: generate only final frame, then crossfade client-side-quality
+            # Blend mode: generate only final frame, then crossfade
             if end_bytes is None:
-                end_bytes = transform_image_with_stability(start_bytes, optimized_prompt, strength)
+                end_bytes = transform_image_with_stability(start_bytes, optimized_prompt, strength, negative_prompt)
             gif_bytes = blend_two_images_to_gif(
                 start_bytes, end_bytes, num_frames * 3, frame_duration, boomerang
             )
         else:
             # AI frames mode: generate N intermediate frames at progressive strengths
-            frames = generate_animation_frames(start_bytes, optimized_prompt, strength, num_frames)
+            frames = generate_animation_frames(start_bytes, optimized_prompt, strength, num_frames, negative_prompt)
             gif_bytes = compile_gif(start_bytes, frames, frame_duration, boomerang)
     except ValueError as e:
         return jsonify({"error": str(e)}), 500

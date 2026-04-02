@@ -377,8 +377,10 @@
       <div class="compare-item"><h3>KI-bearbeitet</h3><img id="edit-result-img" alt="Ergebnis"></div>
     </div>
     <div class="prompt-box">
-      <strong>Generierter Prompt</strong>
+      <strong>Positiv-Prompt</strong>
       <span id="edit-prompt-text"></span>
+      <strong style="margin-top:0.6rem">Negativ-Prompt</strong>
+      <span id="edit-neg-prompt-text" style="color:#f87171aa"></span>
     </div>
     <a class="download-btn" id="edit-download-btn" href="#" download="raum-bearbeitet.png">Bild herunterladen</a>
     <button class="back-btn" onclick="startOver()">Neues Bild bearbeiten</button>
@@ -559,6 +561,7 @@
       document.getElementById('edit-original-img').src = data.original_image;
       document.getElementById('edit-result-img').src = data.result_image;
       document.getElementById('edit-prompt-text').textContent = data.generated_prompt;
+      document.getElementById('edit-neg-prompt-text').textContent = data.negative_prompt || '';
       document.getElementById('edit-download-btn').href = data.result_image;
       document.getElementById('form-card').style.display = 'none';
       document.getElementById('edit-results').style.display = 'block';
