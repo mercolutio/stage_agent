@@ -63,14 +63,15 @@ def analyze_room_with_claude(image_bytes: bytes, user_instructions: str) -> str:
                     {
                         "type": "text",
                         "text": (
-                            f"Du bist ein Innenarchitektur-Experte. Analysiere diesen Raum detailliert "
-                            f"und erstelle einen präzisen Stable-Diffusion img2img Prompt auf Englisch, "
-                            f"der folgende Änderungen umsetzt: '{user_instructions}'.\n\n"
-                            f"Der Prompt muss:\n"
-                            f"1. Den bestehenden Raumstil beschreiben (Wände, Boden, Möbel)\n"
-                            f"2. Die gewünschten Änderungen klar formulieren\n"
-                            f"3. Qualitätsmarker enthalten (photorealistic, 8k, interior design, professional photography)\n"
-                            f"4. NUR den fertigen Prompt ausgeben, keine Erklärungen"
+                            f"You are an expert interior designer and Stable Diffusion prompt engineer. "
+                            f"Look at this room image and create a concise img2img prompt in English that will "
+                            f"make these specific changes visible and dramatic: '{user_instructions}'.\n\n"
+                            f"Rules:\n"
+                            f"1. START with the desired changes as the most prominent part of the prompt\n"
+                            f"2. Describe what the room SHOULD look like AFTER the changes (not what it looks like now)\n"
+                            f"3. Be specific and concrete about the changes (colors, materials, objects)\n"
+                            f"4. End with: photorealistic, 8k, interior design photography, professional architectural photography, sharp focus\n"
+                            f"5. Output ONLY the final prompt, nothing else, no explanations"
                         ),
                     },
                 ],
@@ -102,10 +103,9 @@ def transform_image_with_stability(image_bytes: bytes, prompt: str, strength: fl
             "text_prompts[0][weight]": "1",
             "text_prompts[1][text]": "blurry, low quality, distorted, ugly, bad anatomy",
             "text_prompts[1][weight]": "-1",
-            "cfg_scale": "7",
+            "cfg_scale": "12",
             "samples": "1",
-            "steps": "30",
-            "seed": "42",
+            "steps": "40",
         },
         timeout=120,
     )
