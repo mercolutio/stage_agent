@@ -18,509 +18,621 @@
       padding: 2rem 1rem;
     }
 
-    header {
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
+    header { text-align: center; margin-bottom: 2.5rem; }
 
     header h1 {
-      font-size: 2rem;
-      font-weight: 700;
+      font-size: 2rem; font-weight: 700;
       background: linear-gradient(135deg, #a78bfa, #60a5fa);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
 
-    header p {
-      color: #9090b0;
-      margin-top: 0.5rem;
-      font-size: 0.95rem;
-    }
+    header p { color: #9090b0; margin-top: 0.5rem; font-size: 0.95rem; }
 
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      background: #1e1e2e;
-      border: 1px solid #2e2e4e;
-      border-radius: 999px;
-      padding: 0.25rem 0.75rem;
-      font-size: 0.78rem;
-      color: #9090b0;
-      margin-top: 0.75rem;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: #1e1e2e; border: 1px solid #2e2e4e; border-radius: 999px;
+      padding: 0.25rem 0.75rem; font-size: 0.78rem; color: #9090b0; margin-top: 0.75rem;
     }
-
     .badge span { color: #a78bfa; font-weight: 600; }
 
     .card {
-      width: 100%;
-      max-width: 760px;
-      background: #16161e;
-      border: 1px solid #2a2a3e;
-      border-radius: 16px;
-      padding: 1.75rem;
-      margin-bottom: 1.5rem;
+      width: 100%; max-width: 760px; background: #16161e;
+      border: 1px solid #2a2a3e; border-radius: 16px; padding: 1.75rem; margin-bottom: 1.5rem;
     }
 
     .card h2 {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #c8c8e0;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      font-size: 1rem; font-weight: 600; color: #c8c8e0;
+      margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;
     }
 
-    /* Upload Zone */
-    #upload-zone {
-      border: 2px dashed #2e2e4e;
-      border-radius: 12px;
-      padding: 2.5rem 1rem;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
+    /* Mode Toggle */
+    .mode-toggle {
+      display: flex; background: #0f0f13; border-radius: 10px;
+      padding: 4px; margin-bottom: 1.5rem; border: 1px solid #2a2a3e;
+    }
+    .mode-toggle button {
+      flex: 1; padding: 0.6rem; border: none; border-radius: 8px;
+      background: transparent; color: #7070a0; font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .mode-toggle button.active {
+      background: linear-gradient(135deg, #7c3aed33, #2563eb33);
+      color: #a78bfa; box-shadow: 0 0 12px #7c3aed22;
+    }
+
+    /* Upload */
+    .upload-zone {
+      border: 2px dashed #2e2e4e; border-radius: 12px; padding: 2rem 1rem;
+      text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s;
       position: relative;
     }
+    .upload-zone:hover, .upload-zone.dragover { border-color: #a78bfa; background: #1e1e2e; }
+    .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .upload-zone .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .upload-zone p { color: #7070a0; font-size: 0.85rem; }
+    .upload-zone strong { color: #a78bfa; }
 
-    #upload-zone:hover, #upload-zone.dragover {
-      border-color: #a78bfa;
-      background: #1e1e2e;
+    .preview-box { display: none; margin-top: 0.75rem; }
+    .preview-box img {
+      width: 100%; max-height: 280px; object-fit: contain;
+      border-radius: 8px; border: 1px solid #2a2a3e;
     }
-
-    #upload-zone input[type="file"] {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-    }
-
-    #upload-zone .icon {
-      font-size: 2.5rem;
-      margin-bottom: 0.75rem;
-    }
-
-    #upload-zone p { color: #7070a0; font-size: 0.9rem; }
-    #upload-zone strong { color: #a78bfa; }
-
-    #preview-container {
-      display: none;
-      margin-top: 1rem;
-    }
-
-    #preview-container img {
-      width: 100%;
-      max-height: 320px;
-      object-fit: contain;
-      border-radius: 8px;
-      border: 1px solid #2a2a3e;
-    }
-
-    #preview-container .file-info {
-      margin-top: 0.5rem;
-      font-size: 0.82rem;
-      color: #7070a0;
-      display: flex;
-      justify-content: space-between;
+    .preview-box .file-info {
+      margin-top: 0.4rem; font-size: 0.8rem; color: #7070a0;
+      display: flex; justify-content: space-between;
     }
 
     .change-btn {
-      margin-top: 0.5rem;
-      background: none;
-      border: 1px solid #2e2e4e;
-      border-radius: 8px;
-      color: #9090b0;
-      padding: 0.35rem 0.8rem;
-      font-size: 0.82rem;
-      cursor: pointer;
+      margin-top: 0.4rem; background: none; border: 1px solid #2e2e4e; border-radius: 8px;
+      color: #9090b0; padding: 0.3rem 0.7rem; font-size: 0.8rem; cursor: pointer;
       transition: border-color 0.2s, color 0.2s;
     }
-
     .change-btn:hover { border-color: #a78bfa; color: #a78bfa; }
 
-    /* Form Elements */
-    label {
-      display: block;
-      font-size: 0.85rem;
-      color: #9090b0;
-      margin-bottom: 0.5rem;
-    }
+    /* Form */
+    label { display: block; font-size: 0.85rem; color: #9090b0; margin-bottom: 0.5rem; }
 
     textarea {
-      width: 100%;
-      background: #0f0f13;
-      border: 1px solid #2a2a3e;
-      border-radius: 10px;
-      color: #e8e8f0;
-      padding: 0.85rem 1rem;
-      font-size: 0.95rem;
-      resize: vertical;
-      min-height: 100px;
-      transition: border-color 0.2s;
-      font-family: inherit;
+      width: 100%; background: #0f0f13; border: 1px solid #2a2a3e; border-radius: 10px;
+      color: #e8e8f0; padding: 0.85rem 1rem; font-size: 0.95rem; resize: vertical;
+      min-height: 90px; transition: border-color 0.2s; font-family: inherit;
     }
-
     textarea:focus { outline: none; border-color: #a78bfa; }
     textarea::placeholder { color: #5050708a; }
 
-    .slider-row {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-top: 1rem; }
     .slider-row label { margin: 0; white-space: nowrap; }
+    input[type="range"] { flex: 1; accent-color: #a78bfa; }
+    .slider-val { font-weight: 600; color: #a78bfa; min-width: 3ch; text-align: right; }
+    .slider-hint { font-size: 0.78rem; color: #5a5a7a; margin-top: 0.35rem; }
 
-    input[type="range"] {
-      flex: 1;
-      accent-color: #a78bfa;
+    /* Animation options */
+    .anim-options { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid #2a2a3e; }
+    .anim-options h3 { font-size: 0.9rem; color: #c8c8e0; margin-bottom: 0.75rem; }
+
+    .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    @media (max-width: 480px) { .option-grid { grid-template-columns: 1fr; } }
+
+    .option-card {
+      background: #0f0f13; border: 1px solid #2a2a3e; border-radius: 10px;
+      padding: 0.75rem; cursor: pointer; transition: all 0.2s; text-align: center;
     }
+    .option-card:hover { border-color: #7c3aed88; }
+    .option-card.selected { border-color: #a78bfa; background: #1a1a2e; box-shadow: 0 0 10px #7c3aed22; }
+    .option-card .opt-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
+    .option-card .opt-title { font-size: 0.82rem; font-weight: 600; color: #c8c8e0; }
+    .option-card .opt-desc { font-size: 0.72rem; color: #6a6a8a; margin-top: 0.2rem; }
 
-    #strength-val {
-      font-weight: 600;
-      color: #a78bfa;
-      min-width: 3ch;
-      text-align: right;
+    .toggle-row {
+      display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem;
     }
-
-    .strength-hint {
-      font-size: 0.78rem;
-      color: #5a5a7a;
-      margin-top: 0.35rem;
+    .toggle-row label { margin: 0; font-size: 0.82rem; }
+    .toggle {
+      position: relative; width: 40px; height: 22px; background: #2a2a3e;
+      border-radius: 999px; cursor: pointer; transition: background 0.2s;
     }
+    .toggle.on { background: #7c3aed; }
+    .toggle::after {
+      content: ''; position: absolute; top: 2px; left: 2px;
+      width: 18px; height: 18px; background: #e8e8f0; border-radius: 50%;
+      transition: transform 0.2s;
+    }
+    .toggle.on::after { transform: translateX(18px); }
 
-    /* Submit Button */
-    #submit-btn {
-      width: 100%;
-      padding: 0.9rem;
+    /* End Frame Upload (animate mode) */
+    .end-frame-section { margin-top: 1rem; }
+    .end-frame-section summary {
+      color: #9090b0; font-size: 0.85rem; cursor: pointer; user-select: none;
+    }
+    .end-frame-section summary:hover { color: #a78bfa; }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%; padding: 0.9rem;
       background: linear-gradient(135deg, #7c3aed, #2563eb);
-      border: none;
-      border-radius: 12px;
-      color: white;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
-      margin-top: 1.5rem;
+      border: none; border-radius: 12px; color: white; font-size: 1rem; font-weight: 600;
+      cursor: pointer; transition: opacity 0.2s, transform 0.1s; margin-top: 1.5rem;
     }
-
-    #submit-btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
-    #submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-primary:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
     /* Loading */
-    #loading {
-      display: none;
-      text-align: center;
-      padding: 2rem;
-    }
-
+    .loading-box { display: none; text-align: center; padding: 2rem; }
     .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid #2a2a3e;
-      border-top-color: #a78bfa;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 1rem;
+      width: 40px; height: 40px; border: 3px solid #2a2a3e; border-top-color: #a78bfa;
+      border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-box p { color: #7070a0; font-size: 0.9rem; }
+    .loading-box .step { color: #a78bfa; font-weight: 600; }
 
-    #loading p { color: #7070a0; font-size: 0.9rem; }
-    #loading .step { color: #a78bfa; font-weight: 600; }
+    /* Progress bar */
+    .progress-bar {
+      width: 80%; max-width: 300px; height: 6px; background: #2a2a3e;
+      border-radius: 999px; margin: 1rem auto 0; overflow: hidden;
+    }
+    .progress-bar .fill {
+      height: 100%; background: linear-gradient(90deg, #7c3aed, #60a5fa);
+      border-radius: 999px; transition: width 0.5s ease;
+    }
 
     /* Error */
-    #error-box {
-      display: none;
-      background: #2a1020;
-      border: 1px solid #5a1030;
-      border-radius: 10px;
-      padding: 1rem 1.25rem;
-      color: #f87171;
-      font-size: 0.9rem;
-      margin-top: 1rem;
+    .error-box {
+      display: none; background: #2a1020; border: 1px solid #5a1030;
+      border-radius: 10px; padding: 1rem 1.25rem; color: #f87171;
+      font-size: 0.9rem; margin-top: 1rem;
     }
 
-    /* Results */
-    #results {
-      display: none;
-      width: 100%;
-      max-width: 760px;
-    }
+    /* Results (shared) */
+    .results-section { display: none; width: 100%; max-width: 760px; }
 
-    .compare-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
     @media (max-width: 540px) { .compare-grid { grid-template-columns: 1fr; } }
-
     .compare-item h3 {
-      font-size: 0.82rem;
-      color: #7070a0;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.5rem;
+      font-size: 0.82rem; color: #7070a0; text-transform: uppercase;
+      letter-spacing: 0.05em; margin-bottom: 0.5rem;
     }
-
-    .compare-item img {
-      width: 100%;
-      border-radius: 10px;
-      border: 1px solid #2a2a3e;
-    }
+    .compare-item img { width: 100%; border-radius: 10px; border: 1px solid #2a2a3e; }
 
     .prompt-box {
-      background: #0f0f13;
-      border: 1px solid #2a2a3e;
-      border-radius: 10px;
-      padding: 1rem;
-      font-size: 0.82rem;
-      color: #7070a0;
-      line-height: 1.6;
-      word-break: break-word;
+      background: #0f0f13; border: 1px solid #2a2a3e; border-radius: 10px;
+      padding: 1rem; font-size: 0.82rem; color: #7070a0; line-height: 1.6; word-break: break-word;
     }
-
     .prompt-box strong { color: #a78bfa; display: block; margin-bottom: 0.4rem; }
 
-    #download-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      width: 100%;
-      padding: 0.75rem;
-      background: #1e1e2e;
-      border: 1px solid #2e2e4e;
-      border-radius: 10px;
-      color: #c8c8e0;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
-      margin-top: 1rem;
-      text-decoration: none;
+    .download-btn {
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      width: 100%; padding: 0.75rem; background: #1e1e2e; border: 1px solid #2e2e4e;
+      border-radius: 10px; color: #c8c8e0; font-size: 0.9rem; font-weight: 600;
+      cursor: pointer; transition: background 0.2s, border-color 0.2s;
+      margin-top: 1rem; text-decoration: none;
+    }
+    .download-btn:hover { background: #252538; border-color: #a78bfa; color: #a78bfa; }
+
+    .back-btn {
+      width: 100%; padding: 0.65rem; background: none; border: 1px solid #2e2e4e;
+      border-radius: 10px; color: #7070a0; font-size: 0.88rem; cursor: pointer;
+      margin-top: 0.75rem; transition: border-color 0.2s, color 0.2s;
+    }
+    .back-btn:hover { border-color: #a78bfa; color: #a78bfa; }
+
+    /* Animation result */
+    .anim-preview {
+      text-align: center; margin-bottom: 1rem;
+    }
+    .anim-preview img {
+      max-width: 100%; border-radius: 12px; border: 1px solid #2a2a3e;
     }
 
-    #download-btn:hover { background: #252538; border-color: #a78bfa; color: #a78bfa; }
+    /* Canvas animation player */
+    .canvas-player {
+      position: relative; margin: 0 auto 1rem; max-width: 100%;
+    }
+    .canvas-player canvas {
+      display: block; width: 100%; border-radius: 12px; border: 1px solid #2a2a3e;
+    }
 
-    #new-edit-btn {
-      width: 100%;
-      padding: 0.65rem;
-      background: none;
-      border: 1px solid #2e2e4e;
-      border-radius: 10px;
-      color: #7070a0;
-      font-size: 0.88rem;
-      cursor: pointer;
+    .playback-controls {
+      display: flex; align-items: center; justify-content: center; gap: 0.75rem;
       margin-top: 0.75rem;
-      transition: border-color 0.2s, color 0.2s;
     }
-
-    #new-edit-btn:hover { border-color: #a78bfa; color: #a78bfa; }
+    .playback-controls button {
+      background: #1e1e2e; border: 1px solid #2e2e4e; border-radius: 8px;
+      color: #c8c8e0; padding: 0.4rem 0.85rem; font-size: 0.85rem;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .playback-controls button:hover { border-color: #a78bfa; color: #a78bfa; }
+    .playback-controls button.active { background: #7c3aed33; border-color: #a78bfa; color: #a78bfa; }
+    .speed-display { font-size: 0.78rem; color: #7070a0; min-width: 3.5rem; text-align: center; }
   </style>
 </head>
 <body>
 
 <header>
   <h1>KI Raum-Editor</h1>
-  <p>Lade ein Foto deines Raums hoch und lass die KI ihn umgestalten</p>
+  <p>Lade ein Foto deines Raums hoch und lass die KI ihn umgestalten und animieren</p>
   <div class="badge">
-    <span>Claude Opus 4.6</span> Analyse &nbsp;+&nbsp; <span>Stability AI</span> Bildbearbeitung
+    <span>Claude Opus 4.6</span> Analyse &nbsp;+&nbsp; <span>Stability AI</span> Bildbearbeitung &amp; Animation
   </div>
 </header>
 
+<!-- ===== FORM CARD ===== -->
 <div class="card" id="form-card">
-  <h2>📷 Raumbild hochladen</h2>
 
-  <div id="upload-zone">
+  <!-- Mode Toggle -->
+  <div class="mode-toggle">
+    <button class="active" onclick="setMode('edit')" id="mode-edit-btn">Einzelbild bearbeiten</button>
+    <button onclick="setMode('animate')" id="mode-anim-btn">Animation erstellen</button>
+  </div>
+
+  <h2 id="form-title">Raumbild hochladen</h2>
+
+  <!-- Start Image Upload -->
+  <div class="upload-zone" id="upload-zone">
     <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp">
     <div class="icon">🏠</div>
     <p><strong>Klicke hier</strong> oder ziehe ein Bild hinein</p>
-    <p style="margin-top:0.3rem">JPEG · PNG · WebP · max. 10 MB</p>
+    <p style="margin-top:0.3rem">JPEG, PNG, WebP · max. 10 MB</p>
   </div>
-
-  <div id="preview-container">
+  <div class="preview-box" id="preview-container">
     <img id="preview-img" alt="Vorschau">
-    <div class="file-info">
-      <span id="file-name"></span>
-      <span id="file-size"></span>
-    </div>
-    <button class="change-btn" onclick="resetUpload()">Bild wechseln</button>
+    <div class="file-info"><span id="file-name"></span><span id="file-size"></span></div>
+    <button class="change-btn" onclick="resetUpload('start')">Bild wechseln</button>
   </div>
 
-  <div style="margin-top:1.5rem">
-    <label for="instructions">Was soll verändert werden?</label>
-    <textarea
-      id="instructions"
-      placeholder="z.B. moderner skandinavischer Stil mit hellen Farben, mehr Pflanzen und natürlichem Licht"
-    ></textarea>
+  <!-- End Frame Upload (animation mode only) -->
+  <div id="end-frame-section" style="display:none" class="end-frame-section">
+    <details>
+      <summary>Optional: Eigenes Zielbild hochladen (statt KI-generiert)</summary>
+      <div style="margin-top:0.75rem">
+        <div class="upload-zone" id="end-upload-zone">
+          <input type="file" id="end-file-input" accept="image/jpeg,image/png,image/webp">
+          <div class="icon">🎯</div>
+          <p><strong>Zielbild</strong> hochladen</p>
+        </div>
+        <div class="preview-box" id="end-preview-container">
+          <img id="end-preview-img" alt="Zielbild Vorschau">
+          <div class="file-info"><span id="end-file-name"></span><span id="end-file-size"></span></div>
+          <button class="change-btn" onclick="resetUpload('end')">Zielbild wechseln</button>
+        </div>
+      </div>
+    </details>
   </div>
 
+  <!-- Instructions -->
+  <div style="margin-top:1.25rem">
+    <label for="instructions">Was soll veraendert werden?</label>
+    <textarea id="instructions"
+      placeholder="z.B. moderner skandinavischer Stil mit hellen Farben, mehr Pflanzen und natuerlichem Licht"></textarea>
+  </div>
+
+  <!-- Strength Slider -->
   <div class="slider-row">
-    <label for="strength">Änderungsstärke</label>
+    <label for="strength">Aenderungsstaerke</label>
     <input type="range" id="strength" min="0.3" max="0.9" step="0.05" value="0.6"
            oninput="document.getElementById('strength-val').textContent = parseFloat(this.value).toFixed(2)">
-    <span id="strength-val">0.60</span>
+    <span class="slider-val" id="strength-val">0.60</span>
   </div>
-  <p class="strength-hint">Niedrig = strukturtreu · Hoch = kreative Neugestaltung</p>
+  <p class="slider-hint">Niedrig = strukturtreu · Hoch = kreative Neugestaltung</p>
 
-  <button id="submit-btn" onclick="startEdit()">✨ Raum bearbeiten</button>
+  <!-- Animation Options (animate mode only) -->
+  <div id="anim-options" class="anim-options" style="display:none">
+    <h3>Animations-Einstellungen</h3>
 
-  <div id="loading">
+    <label style="margin-bottom:0.5rem">Animations-Modus</label>
+    <div class="option-grid">
+      <div class="option-card selected" onclick="selectAnimMode('ai_frames')" id="opt-ai-frames">
+        <div class="opt-icon">🎬</div>
+        <div class="opt-title">KI-Frames</div>
+        <div class="opt-desc">Generiert Zwischenframes mit steigender Staerke – echte KI-Morphing-Animation</div>
+      </div>
+      <div class="option-card" onclick="selectAnimMode('blend')" id="opt-blend">
+        <div class="opt-icon">✨</div>
+        <div class="opt-title">Smooth Blend</div>
+        <div class="opt-desc">Erzeugt Start- und Endbild, blendet sanft ueber – schneller, 1 API-Call</div>
+      </div>
+    </div>
+
+    <div class="slider-row" style="margin-top:1rem">
+      <label for="num-frames">Frames</label>
+      <input type="range" id="num-frames" min="3" max="12" step="1" value="6"
+             oninput="updateFrameLabel()">
+      <span class="slider-val" id="num-frames-val">6</span>
+    </div>
+    <p class="slider-hint" id="frames-hint">6 KI-Frames = ca. 60-90 Sek. Generierung</p>
+
+    <div class="slider-row">
+      <label for="frame-speed">Geschwindigkeit</label>
+      <input type="range" id="frame-speed" min="50" max="300" step="10" value="120"
+             oninput="document.getElementById('speed-val').textContent = this.value + 'ms'">
+      <span class="slider-val" id="speed-val">120ms</span>
+    </div>
+    <p class="slider-hint">Dauer pro Frame in Millisekunden</p>
+
+    <div class="toggle-row">
+      <div class="toggle on" id="boomerang-toggle" onclick="toggleBoomerang()"></div>
+      <label>Boomerang (hin und zurueck)</label>
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <button class="btn-primary" id="submit-btn" onclick="handleSubmit()">Raum bearbeiten</button>
+
+  <!-- Loading -->
+  <div class="loading-box" id="loading">
     <div class="spinner"></div>
-    <p><span class="step" id="loading-step">Schritt 1/2</span> – Claude analysiert den Raum…</p>
+    <p id="loading-text"><span class="step">Schritt 1/2</span> – Claude analysiert den Raum...</p>
+    <div class="progress-bar"><div class="fill" id="progress-fill" style="width:0%"></div></div>
   </div>
 
-  <div id="error-box"></div>
+  <div class="error-box" id="error-box"></div>
 </div>
 
-<div id="results">
+<!-- ===== EDIT RESULTS ===== -->
+<div class="results-section" id="edit-results">
   <div class="card">
-    <h2>🎨 Ergebnis</h2>
+    <h2>Ergebnis</h2>
     <div class="compare-grid">
-      <div class="compare-item">
-        <h3>Original</h3>
-        <img id="original-img" alt="Original">
-      </div>
-      <div class="compare-item">
-        <h3>KI-bearbeitet</h3>
-        <img id="result-img" alt="Ergebnis">
-      </div>
+      <div class="compare-item"><h3>Original</h3><img id="edit-original-img" alt="Original"></div>
+      <div class="compare-item"><h3>KI-bearbeitet</h3><img id="edit-result-img" alt="Ergebnis"></div>
     </div>
-
     <div class="prompt-box">
-      <strong>Generierter Prompt (Claude → Stability AI)</strong>
-      <span id="prompt-text"></span>
+      <strong>Generierter Prompt</strong>
+      <span id="edit-prompt-text"></span>
     </div>
+    <a class="download-btn" id="edit-download-btn" href="#" download="raum-bearbeitet.png">Bild herunterladen</a>
+    <button class="back-btn" onclick="startOver()">Neues Bild bearbeiten</button>
+  </div>
+</div>
 
-    <a id="download-btn" href="#" download="raum-bearbeitet.png">
-      ⬇ Bild herunterladen
-    </a>
-    <button id="new-edit-btn" onclick="startOver()">← Neues Bild bearbeiten</button>
+<!-- ===== ANIMATION RESULTS ===== -->
+<div class="results-section" id="anim-results">
+  <div class="card">
+    <h2>Animation</h2>
+    <div class="anim-preview">
+      <img id="anim-gif" alt="Animation">
+    </div>
+    <div class="prompt-box">
+      <strong>Generierter Prompt</strong>
+      <span id="anim-prompt-text"></span>
+    </div>
+    <a class="download-btn" id="anim-download-btn" href="#" download="raum-animation.gif">Animation herunterladen (GIF)</a>
+    <button class="back-btn" onclick="startOver()">Neue Animation erstellen</button>
   </div>
 </div>
 
 <script>
+  // State
+  let currentMode = 'edit';
   let selectedFile = null;
+  let selectedEndFile = null;
+  let animMode = 'ai_frames';
+  let boomerang = true;
 
-  // Drag & Drop
-  const zone = document.getElementById("upload-zone");
-  zone.addEventListener("dragover", e => { e.preventDefault(); zone.classList.add("dragover"); });
-  zone.addEventListener("dragleave", () => zone.classList.remove("dragover"));
-  zone.addEventListener("drop", e => {
-    e.preventDefault();
-    zone.classList.remove("dragover");
-    const file = e.dataTransfer.files[0];
-    if (file) handleFile(file);
-  });
+  // --- Mode ---
+  function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('mode-edit-btn').classList.toggle('active', mode === 'edit');
+    document.getElementById('mode-anim-btn').classList.toggle('active', mode === 'animate');
+    document.getElementById('anim-options').style.display = mode === 'animate' ? 'block' : 'none';
+    document.getElementById('end-frame-section').style.display = mode === 'animate' ? 'block' : 'none';
+    document.getElementById('submit-btn').textContent =
+      mode === 'edit' ? 'Raum bearbeiten' : 'Animation generieren';
+    document.getElementById('form-title').textContent =
+      mode === 'edit' ? 'Raumbild hochladen' : 'Start-Frame hochladen';
+  }
 
-  document.getElementById("file-input").addEventListener("change", e => {
-    if (e.target.files[0]) handleFile(e.target.files[0]);
-  });
+  function selectAnimMode(mode) {
+    animMode = mode;
+    document.getElementById('opt-ai-frames').classList.toggle('selected', mode === 'ai_frames');
+    document.getElementById('opt-blend').classList.toggle('selected', mode === 'blend');
+    updateFrameLabel();
+  }
 
-  function handleFile(file) {
-    const allowed = ["image/jpeg", "image/png", "image/webp"];
-    if (!allowed.includes(file.type)) {
-      showError("Nur JPEG, PNG und WebP werden unterstützt.");
-      return;
+  function toggleBoomerang() {
+    boomerang = !boomerang;
+    document.getElementById('boomerang-toggle').classList.toggle('on', boomerang);
+  }
+
+  function updateFrameLabel() {
+    const n = document.getElementById('num-frames').value;
+    document.getElementById('num-frames-val').textContent = n;
+    if (animMode === 'ai_frames') {
+      const secs = Math.round(n * 12);
+      document.getElementById('frames-hint').textContent =
+        n + ' KI-Frames = ca. ' + secs + '-' + Math.round(secs * 1.5) + ' Sek. Generierung';
+    } else {
+      document.getElementById('frames-hint').textContent =
+        (n * 3) + ' Blend-Frames (schnell, nur 1 API-Call)';
     }
-    if (file.size > 10 * 1024 * 1024) {
-      showError("Die Datei ist zu groß (max. 10 MB).");
-      return;
+  }
+
+  // --- Upload ---
+  function setupUploadZone(zoneId, inputId, previewBoxId, imgId, nameId, sizeId, which) {
+    const zone = document.getElementById(zoneId);
+    const input = document.getElementById(inputId);
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault(); zone.classList.remove('dragover');
+      if (e.dataTransfer.files[0]) handleFileUpload(e.dataTransfer.files[0], which);
+    });
+    input.addEventListener('change', e => { if (e.target.files[0]) handleFileUpload(e.target.files[0], which); });
+  }
+
+  function handleFileUpload(file, which) {
+    const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowed.includes(file.type)) { showError('Nur JPEG, PNG und WebP.'); return; }
+    if (file.size > 10 * 1024 * 1024) { showError('Max. 10 MB.'); return; }
+
+    if (which === 'start') {
+      selectedFile = file;
+      showPreview(file, 'upload-zone', 'preview-container', 'preview-img', 'file-name', 'file-size');
+    } else {
+      selectedEndFile = file;
+      showPreview(file, 'end-upload-zone', 'end-preview-container', 'end-preview-img', 'end-file-name', 'end-file-size');
     }
-    selectedFile = file;
+  }
+
+  function showPreview(file, zoneId, boxId, imgId, nameId, sizeId) {
     const reader = new FileReader();
     reader.onload = e => {
-      document.getElementById("preview-img").src = e.target.result;
-      document.getElementById("file-name").textContent = file.name;
-      document.getElementById("file-size").textContent = (file.size / 1024).toFixed(0) + " KB";
-      document.getElementById("upload-zone").style.display = "none";
-      document.getElementById("preview-container").style.display = "block";
+      document.getElementById(imgId).src = e.target.result;
+      document.getElementById(nameId).textContent = file.name;
+      document.getElementById(sizeId).textContent = (file.size / 1024).toFixed(0) + ' KB';
+      document.getElementById(zoneId).style.display = 'none';
+      document.getElementById(boxId).style.display = 'block';
     };
     reader.readAsDataURL(file);
   }
 
-  function resetUpload() {
-    selectedFile = null;
-    document.getElementById("file-input").value = "";
-    document.getElementById("upload-zone").style.display = "block";
-    document.getElementById("preview-container").style.display = "none";
+  function resetUpload(which) {
+    if (which === 'start') {
+      selectedFile = null;
+      document.getElementById('file-input').value = '';
+      document.getElementById('upload-zone').style.display = 'block';
+      document.getElementById('preview-container').style.display = 'none';
+    } else {
+      selectedEndFile = null;
+      document.getElementById('end-file-input').value = '';
+      document.getElementById('end-upload-zone').style.display = 'block';
+      document.getElementById('end-preview-container').style.display = 'none';
+    }
   }
 
-  function showError(msg) {
-    const box = document.getElementById("error-box");
-    box.textContent = "⚠ " + msg;
-    box.style.display = "block";
+  setupUploadZone('upload-zone', 'file-input', 'preview-container', 'preview-img', 'file-name', 'file-size', 'start');
+  setupUploadZone('end-upload-zone', 'end-file-input', 'end-preview-container', 'end-preview-img', 'end-file-name', 'end-file-size', 'end');
+
+  // --- Errors & Loading ---
+  function showError(msg) { const b = document.getElementById('error-box'); b.textContent = msg; b.style.display = 'block'; }
+  function hideError() { document.getElementById('error-box').style.display = 'none'; }
+
+  function setLoading(active, text) {
+    document.getElementById('submit-btn').disabled = active;
+    document.getElementById('loading').style.display = active ? 'block' : 'none';
+    document.getElementById('submit-btn').style.display = active ? 'none' : 'block';
+    if (text) document.getElementById('loading-text').innerHTML = text;
+    if (!active) document.getElementById('progress-fill').style.width = '0%';
   }
 
-  function hideError() {
-    document.getElementById("error-box").style.display = "none";
+  function setProgress(pct) {
+    document.getElementById('progress-fill').style.width = pct + '%';
   }
 
-  function setLoading(active, step) {
-    const btn = document.getElementById("submit-btn");
-    const loading = document.getElementById("loading");
-    const stepEl = document.getElementById("loading-step");
-    btn.disabled = active;
-    loading.style.display = active ? "block" : "none";
-    btn.style.display = active ? "none" : "block";
-    if (step) stepEl.textContent = step;
-  }
-
-  async function startEdit() {
+  // --- Submit ---
+  async function handleSubmit() {
     hideError();
-    if (!selectedFile) { showError("Bitte erst ein Bild hochladen."); return; }
-    const instructions = document.getElementById("instructions").value.trim();
-    if (!instructions) { showError("Bitte Bearbeitungsanweisungen eingeben."); return; }
+    if (!selectedFile) { showError('Bitte ein Bild hochladen.'); return; }
+    const instructions = document.getElementById('instructions').value.trim();
+    if (!instructions) { showError('Bitte Bearbeitungsanweisungen eingeben.'); return; }
 
-    const strength = document.getElementById("strength").value;
+    if (currentMode === 'edit') {
+      await doEdit(instructions);
+    } else {
+      await doAnimate(instructions);
+    }
+  }
+
+  async function doEdit(instructions) {
     const formData = new FormData();
-    formData.append("image", selectedFile);
-    formData.append("instructions", instructions);
-    formData.append("strength", strength);
+    formData.append('image', selectedFile);
+    formData.append('instructions', instructions);
+    formData.append('strength', document.getElementById('strength').value);
 
-    setLoading(true, "Schritt 1/2");
-    document.getElementById("loading").querySelector("p").innerHTML =
-      '<span class="step">Schritt 1/2</span> – Claude analysiert den Raum…';
+    setLoading(true, '<span class="step">Schritt 1/2</span> – Claude analysiert den Raum...');
+    setProgress(20);
 
-    // Simulate step update after 3s
     setTimeout(() => {
-      if (document.getElementById("loading").style.display !== "none") {
-        document.getElementById("loading").querySelector("p").innerHTML =
-          '<span class="step">Schritt 2/2</span> – Stability AI rendert das Bild…';
+      if (document.getElementById('loading').style.display !== 'none') {
+        document.getElementById('loading-text').innerHTML =
+          '<span class="step">Schritt 2/2</span> – Stability AI rendert...';
+        setProgress(60);
       }
     }, 4000);
 
     try {
-      const res = await fetch("/edit", { method: "POST", body: formData });
+      const res = await fetch('/edit', { method: 'POST', body: formData });
       const data = await res.json();
+      if (!res.ok) { showError(data.error || 'Fehler'); return; }
 
-      if (!res.ok) { showError(data.error || "Unbekannter Fehler"); return; }
-
-      // Show results
-      document.getElementById("original-img").src = data.original_image;
-      document.getElementById("result-img").src = data.result_image;
-      document.getElementById("prompt-text").textContent = data.generated_prompt;
-      document.getElementById("download-btn").href = data.result_image;
-
-      document.getElementById("form-card").style.display = "none";
-      document.getElementById("results").style.display = "block";
+      setProgress(100);
+      document.getElementById('edit-original-img').src = data.original_image;
+      document.getElementById('edit-result-img').src = data.result_image;
+      document.getElementById('edit-prompt-text').textContent = data.generated_prompt;
+      document.getElementById('edit-download-btn').href = data.result_image;
+      document.getElementById('form-card').style.display = 'none';
+      document.getElementById('edit-results').style.display = 'block';
     } catch (err) {
-      showError("Netzwerkfehler: " + err.message);
+      showError('Netzwerkfehler: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function doAnimate(instructions) {
+    const numFrames = document.getElementById('num-frames').value;
+    const frameDuration = document.getElementById('frame-speed').value;
+
+    const formData = new FormData();
+    formData.append('image', selectedFile);
+    formData.append('instructions', instructions);
+    formData.append('strength', document.getElementById('strength').value);
+    formData.append('num_frames', numFrames);
+    formData.append('frame_duration', frameDuration);
+    formData.append('boomerang', boomerang ? 'true' : 'false');
+    formData.append('mode', animMode);
+    if (selectedEndFile) formData.append('end_image', selectedEndFile);
+
+    const totalFrames = animMode === 'ai_frames' ? parseInt(numFrames) : 1;
+    const estimatedSecs = totalFrames * 12;
+
+    setLoading(true, '<span class="step">Schritt 1/' + (totalFrames + 1) + '</span> – Claude analysiert den Raum...');
+    setProgress(5);
+
+    // Simulate progress
+    let step = 1;
+    const interval = setInterval(() => {
+      step++;
+      if (step <= totalFrames + 1) {
+        const pct = Math.min(95, (step / (totalFrames + 1)) * 100);
+        setProgress(pct);
+        if (step <= totalFrames) {
+          document.getElementById('loading-text').innerHTML =
+            '<span class="step">Frame ' + step + '/' + totalFrames + '</span> – Stability AI rendert Frame...';
+        } else {
+          document.getElementById('loading-text').innerHTML =
+            '<span class="step">Finalisierung</span> – GIF wird erstellt...';
+        }
+      }
+    }, estimatedSecs * 1000 / (totalFrames + 1));
+
+    try {
+      const res = await fetch('/animate', { method: 'POST', body: formData });
+      clearInterval(interval);
+      const data = await res.json();
+      if (!res.ok) { showError(data.error || 'Fehler'); return; }
+
+      setProgress(100);
+      document.getElementById('anim-gif').src = data.animation;
+      document.getElementById('anim-prompt-text').textContent = data.generated_prompt;
+      document.getElementById('anim-download-btn').href = data.animation;
+      document.getElementById('form-card').style.display = 'none';
+      document.getElementById('anim-results').style.display = 'block';
+    } catch (err) {
+      clearInterval(interval);
+      showError('Netzwerkfehler: ' + err.message);
     } finally {
       setLoading(false);
     }
   }
 
   function startOver() {
-    resetUpload();
-    document.getElementById("instructions").value = "";
-    document.getElementById("results").style.display = "none";
-    document.getElementById("form-card").style.display = "block";
+    resetUpload('start');
+    resetUpload('end');
+    document.getElementById('instructions').value = '';
+    document.getElementById('edit-results').style.display = 'none';
+    document.getElementById('anim-results').style.display = 'none';
+    document.getElementById('form-card').style.display = 'block';
   }
 </script>
 </body>
