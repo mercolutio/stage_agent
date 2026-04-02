@@ -15,7 +15,8 @@ app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB max upload
 
 anthropic_client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 STABILITY_API_KEY = os.environ.get("STABILITY_API_KEY")
-STABILITY_URL = "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image"
+STABILITY_URL_V1 = "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image"
+STABILITY_URL_V2 = "https://api.stability.ai/v2beta/stable-image/generate/core"
 
 
 def resize_image_for_stability(image_bytes: bytes) -> bytes:
@@ -89,40 +90,65 @@ def analyze_room_with_claude(image_bytes: bytes, user_instructions: str) -> str:
     return positive, negative
 
 
-def transform_image_with_stability(image_bytes: bytes, prompt: str, strength: float, negative_prompt: str = "") -> bytes:
-    """Send image + prompt to Stability AI img2img endpoint."""
+def transform_image_with_stability(image_bytes: bytes, prompt: str, strength: float, negative_prompt: str = "", use_v2: bool = True) -> bytes:
+    """Send image + prompt to Stability AI img2img endpoint.
+
+    use_v2=True  → v2beta/core (SD3 Core, better quality, ~3 credits/image)
+    use_v2=False → v1 SDXL   (cheaper, used for animation frames)
+    """
     if not STABILITY_API_KEY:
         raise ValueError("STABILITY_API_KEY ist nicht gesetzt")
 
     resized = resize_image_for_stability(image_bytes)
+    neg = negative_prompt or "blurry, low quality, distorted, ugly, bad anatomy"
 
-    response = requests.post(
-        STABILITY_URL,
-        headers={
-            "Accept": "application/json",
-            "Authorization": f"Bearer {STABILITY_API_KEY}",
-        },
-        files={"init_image": ("image.png", resized, "image/png")},
-        data={
-            "init_image_mode": "IMAGE_STRENGTH",
-            "image_strength": str(strength),
-            "text_prompts[0][text]": prompt,
-            "text_prompts[0][weight]": "1",
-            "text_prompts[1][text]": negative_prompt or "blurry, low quality, distorted, ugly, bad anatomy",
-            "text_prompts[1][weight]": "-1",
-            "cfg_scale": "12",
-            "samples": "1",
-            "steps": "40",
-        },
-        timeout=120,
-    )
-
-    if response.status_code != 200:
-        raise RuntimeError(f"Stability AI Fehler {response.status_code}: {response.text}")
-
-    result = response.json()
-    image_b64 = result["artifacts"][0]["base64"]
-    return base64.b64decode(image_b64)
+    if use_v2:
+        response = requests.post(
+            STABILITY_URL_V2,
+            headers={
+                "Accept": "application/json",
+                "Authorization": f"Bearer {STABILITY_API_KEY}",
+            },
+            files={"image": ("image.png", resized, "image/png")},
+            data={
+                "prompt": prompt,
+                "negative_prompt": neg,
+                "mode": "image-to-image",
+                "strength": str(strength),
+                "output_format": "png",
+            },
+            timeout=120,
+        )
+        if response.status_code != 200:
+            raise RuntimeError(f"Stability AI v2 Fehler {response.status_code}: {response.text}")
+        result = response.json()
+        return base64.b64decode(result["image"])
+    else:
+        # v1 SDXL — used for animation frames (cost-effective)
+        response = requests.post(
+            STABILITY_URL_V1,
+            headers={
+                "Accept": "application/json",
+                "Authorization": f"Bearer {STABILITY_API_KEY}",
+            },
+            files={"init_image": ("image.png", resized, "image/png")},
+            data={
+                "init_image_mode": "IMAGE_STRENGTH",
+                "image_strength": str(strength),
+                "text_prompts[0][text]": prompt,
+                "text_prompts[0][weight]": "1",
+                "text_prompts[1][text]": neg,
+                "text_prompts[1][weight]": "-1",
+                "cfg_scale": "12",
+                "samples": "1",
+                "steps": "40",
+            },
+            timeout=120,
+        )
+        if response.status_code != 200:
+            raise RuntimeError(f"Stability AI v1 Fehler {response.status_code}: {response.text}")
+        result = response.json()
+        return base64.b64decode(result["artifacts"][0]["base64"])
 
 
 def ease_in_out_cubic(t: float) -> float:
@@ -145,7 +171,7 @@ def generate_animation_frames(
         t = (i + 1) / num_frames
         eased_t = ease_in_out_cubic(t)
         strength = max(0.08, eased_t * target_strength)
-        frame_bytes = transform_image_with_stability(image_bytes, prompt, strength, negative_prompt)
+        frame_bytes = transform_image_with_stability(image_bytes, prompt, strength, negative_prompt, use_v2=False)
         frames.append(frame_bytes)
     return frames
 
