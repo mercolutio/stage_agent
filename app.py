@@ -27,9 +27,23 @@ def resize_image_for_stability(image_bytes: bytes) -> bytes:
     return buf.getvalue()
 
 
+def detect_media_type(image_bytes: bytes) -> str:
+    """Detect image media type from magic bytes."""
+    if image_bytes[:4] == b"RIFF" and image_bytes[8:12] == b"WEBP":
+        return "image/webp"
+    if image_bytes[:8] == b"\x89PNG\r\n\x1a\n":
+        return "image/png"
+    if image_bytes[:2] in (b"\xff\xd8", b"\xff\xe0"[:2]):
+        return "image/jpeg"
+    if image_bytes[:6] in (b"GIF87a", b"GIF89a"):
+        return "image/gif"
+    return "image/png"  # fallback
+
+
 def analyze_room_with_claude(image_bytes: bytes, user_instructions: str) -> str:
     """Use Claude Vision to analyze the room and generate an optimized img2img prompt."""
     image_b64 = base64.standard_b64encode(image_bytes).decode("utf-8")
+    media_type = detect_media_type(image_bytes)
 
     response = anthropic_client.messages.create(
         model="claude-opus-4-6",
@@ -42,7 +56,7 @@ def analyze_room_with_claude(image_bytes: bytes, user_instructions: str) -> str:
                         "type": "image",
                         "source": {
                             "type": "base64",
-                            "media_type": "image/png",
+                            "media_type": media_type,
                             "data": image_b64,
                         },
                     },
