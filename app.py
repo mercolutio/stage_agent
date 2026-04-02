@@ -17,6 +17,7 @@ anthropic_client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 STABILITY_API_KEY = os.environ.get("STABILITY_API_KEY")
 STABILITY_URL_V1 = "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image"
 STABILITY_URL_V2 = "https://api.stability.ai/v2beta/stable-image/generate/core"
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 
 
 def resize_image_for_stability(image_bytes: bytes) -> bytes:
@@ -88,6 +89,46 @@ def analyze_room_with_claude(image_bytes: bytes, user_instructions: str) -> str:
     if not positive:
         positive = raw  # fallback: use whole response as positive
     return positive, negative
+
+
+def transform_image_with_imagen(image_bytes: bytes, prompt: str) -> bytes:
+    """Edit room image using Google Imagen 3 (edit model)."""
+    try:
+        from google import genai
+        from google.genai import types
+    except ImportError:
+        raise RuntimeError("google-genai ist nicht installiert. Führe 'pip install google-genai' aus.")
+
+    if not GOOGLE_API_KEY:
+        raise ValueError("GOOGLE_API_KEY ist nicht gesetzt")
+
+    client = genai.Client(api_key=GOOGLE_API_KEY)
+
+    # Convert to PNG for Imagen
+    img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    png_bytes = buf.getvalue()
+
+    response = client.models.edit_image(
+        model="imagen-3.0-edit-exp",
+        prompt=prompt,
+        reference_images=[
+            types.RawReferenceImage(
+                reference_id=1,
+                reference_image=types.Image(image_bytes=png_bytes),
+            )
+        ],
+        config=types.EditImageConfig(
+            number_of_images=1,
+            output_mime_type="image/png",
+        ),
+    )
+
+    if not response.generated_images:
+        raise RuntimeError("Imagen hat kein Bild zurückgegeben")
+
+    return response.generated_images[0].image.image_bytes
 
 
 def transform_image_with_stability(image_bytes: bytes, prompt: str, strength: float, negative_prompt: str = "", use_v2: bool = True) -> bytes:
@@ -302,7 +343,10 @@ def edit_room():
         return jsonify({"error": f"Claude-Analyse fehlgeschlagen: {str(e)}"}), 500
 
     try:
-        result_bytes = transform_image_with_stability(image_bytes, optimized_prompt, strength, negative_prompt)
+        if GOOGLE_API_KEY:
+            result_bytes = transform_image_with_imagen(image_bytes, optimized_prompt)
+        else:
+            result_bytes = transform_image_with_stability(image_bytes, optimized_prompt, strength, negative_prompt)
     except ValueError as e:
         return jsonify({"error": str(e)}), 500
     except RuntimeError as e:
